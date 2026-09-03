@@ -1,17 +1,52 @@
 package com.example.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
 import java.io.Serializable;
 import java.util.Date;
 
+@Entity
+@Table(name = "users")
+@NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.userName = :username")
+@NamedQuery(name = "User.findByPhone", query = "SELECT u FROM User u WHERE u.phone = :phone")
 public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(name = "username", nullable = false, unique = true, length = 255)
     private String userName;
+
+    @Column(name = "fullname", nullable = false, length = 255)
     private String fullName;
+
+    @Column(nullable = false, length = 255)
     private String passWord;
+
+    @Column(length = 255)
     private String avatar;
+
+    @Column(nullable = false)
     private int roleid;
+
+    @Column(length = 20)
     private String phone;
+
+    @Column(name = "createdDate")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
     public User() {

@@ -54,4 +54,30 @@ public class UserServiceImpl implements UserService {
     public User get(String username) {
         return userDao.get(username);
     }
+
+    @Override
+    public User findById(int id) {
+        return userDao.findById(id);
+    }
+
+    @Override
+    public boolean updateProfile(int userId, String fullName, String phone, String avatar) {
+        User user = userDao.findById(userId);
+        if (user == null) {
+            return false;
+        }
+        if (phone != null && !phone.isBlank()) {
+            User existing = userDao.findByPhone(phone.trim());
+            if (existing != null && existing.getId() != userId) {
+                return false;
+            }
+        }
+        user.setFullName(fullName.trim());
+        user.setPhone(phone == null || phone.isBlank() ? null : phone.trim());
+        if (avatar != null) {
+            user.setAvatar(avatar);
+        }
+        userDao.update(user);
+        return true;
+    }
 }

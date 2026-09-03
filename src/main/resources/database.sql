@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `category` (
 );
 
 -- Chèn dữ liệu mẫu
-INSERT INTO `users` (`email`, `username`, `fullname`, `password`, `roleid`) VALUES 
+INSERT IGNORE INTO `users` (`email`, `username`, `fullname`, `password`, `roleid`) VALUES 
 ('admin@example.com', 'admin', 'Administrator', 'admin123', 1),
 ('manager@example.com', 'manager', 'Manager', 'manager123', 2),
 ('user@example.com', 'user', 'Normal User', 'user123', 3);

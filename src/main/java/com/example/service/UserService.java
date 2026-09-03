@@ -10,4 +10,6 @@ public interface UserService {
     boolean checkExistPhone(String phone);
     User login(String username, String password);
     User get(String username);
+    User findById(int id);
+    boolean updateProfile(int userId, String fullName, String phone, String avatar);
 }

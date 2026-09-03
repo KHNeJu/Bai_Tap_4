@@ -12,8 +12,8 @@ public class DBConnection {
     private final String password = "Admin123@";
 
     public Connection getConnection() throws Exception {
-        String url = "jdbc:mysql://" + serverName + ":" + portNumber + "/" + dbName + "?useUnicode=true&characterEncoding=UTF-8";
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        return DriverManager.getConnection(url, userID, password);
+        String url = "jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:database.sql'";
+        Class.forName("org.h2.Driver");
+        return DriverManager.getConnection(url, "sa", "");
     }
 }
