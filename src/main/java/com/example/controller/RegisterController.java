@@ -12,10 +12,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 @WebServlet(urlPatterns = "/register")
 public class RegisterController extends HttpServlet {
-    private UserService service = new UserServiceImpl();
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("[A-Za-z0-9_]{3,50}");
+    private static final Pattern PHONE_PATTERN = Pattern.compile("[0-9+() .-]{7,20}");
+    private final UserService service = new UserServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -52,17 +55,40 @@ public class RegisterController extends HttpServlet {
         String fullname = req.getParameter("fullname");
         String phone = req.getParameter("phone");
 
-        String alertMsg = "";
+        if (isBlank(username) || !USERNAME_PATTERN.matcher(username.trim()).matches()) {
+            registerError(req, resp, "Username phải gồm 3-50 ký tự chữ, số hoặc dấu gạch dưới.");
+            return;
+        }
+        if (isBlank(password) || password.length() < 6 || password.length() > 255) {
+            registerError(req, resp, "Mật khẩu phải có từ 6 đến 255 ký tự.");
+            return;
+        }
+        if (isBlank(email) || email.length() > 255 || !email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            registerError(req, resp, "Email không hợp lệ.");
+            return;
+        }
+        if (isBlank(fullname) || fullname.trim().length() < 2 || fullname.trim().length() > 255) {
+            registerError(req, resp, "Họ tên phải có từ 2 đến 255 ký tự.");
+            return;
+        }
+        if (!isBlank(phone) && !PHONE_PATTERN.matcher(phone.trim()).matches()) {
+            registerError(req, resp, "Số điện thoại không hợp lệ.");
+            return;
+        }
+
+        username = username.trim();
+        email = email.trim();
+        fullname = fullname.trim();
+        phone = isBlank(phone) ? null : phone.trim();
+
         if (service.checkExistEmail(email)) {
-            alertMsg = "Email đã tồn tại!";
-            req.setAttribute("alert", alertMsg);
+            req.setAttribute("alert", "Email đã tồn tại!");
             req.getRequestDispatcher(Constant.REGISTER).forward(req, resp);
             return;
         }
 
         if (service.checkExistUsername(username)) {
-            alertMsg = "Tài khoản đã tồn tại!";
-            req.setAttribute("alert", alertMsg);
+            req.setAttribute("alert", "Tài khoản đã tồn tại!");
             req.getRequestDispatcher(Constant.REGISTER).forward(req, resp);
             return;
         }
@@ -71,9 +97,18 @@ public class RegisterController extends HttpServlet {
         if (isSuccess) {
             resp.sendRedirect(req.getContextPath() + "/login");
         } else {
-            alertMsg = "System error!";
-            req.setAttribute("alert", alertMsg);
+            req.setAttribute("alert", "System error!");
             req.getRequestDispatcher(Constant.REGISTER).forward(req, resp);
         }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    private void registerError(HttpServletRequest req, HttpServletResponse resp, String message)
+            throws ServletException, IOException {
+        req.setAttribute("alert", message);
+        req.getRequestDispatcher(Constant.REGISTER).forward(req, resp);
     }
 }

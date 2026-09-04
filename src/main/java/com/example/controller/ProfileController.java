@@ -16,12 +16,14 @@ import jakarta.servlet.http.Part;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 @WebServlet(urlPatterns = {"/profile", "/profile/update"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2,
         maxFileSize = 1024 * 1024 * 10,
         maxRequestSize = 1024 * 1024 * 50)
 public class ProfileController extends HttpServlet {
+    private static final Pattern PHONE_PATTERN = Pattern.compile("[0-9+() .-]{7,20}");
     private final UserService userService = new UserServiceImpl();
 
     @Override
@@ -54,8 +56,15 @@ public class ProfileController extends HttpServlet {
             String fullName = req.getParameter("fullName");
             String phone = req.getParameter("phone");
 
-            if (fullName == null || fullName.isBlank()) {
+                if (fullName == null || fullName.isBlank() || fullName.trim().length() < 2
+                    || fullName.trim().length() > 255) {
                 req.setAttribute("alert", "Họ tên không được để trống.");
+                req.setAttribute("user", userService.findById(currentUser.getId()));
+                req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
+                return;
+            }
+            if (phone != null && !phone.isBlank() && !PHONE_PATTERN.matcher(phone.trim()).matches()) {
+                req.setAttribute("alert", "Số điện thoại không hợp lệ.");
                 req.setAttribute("user", userService.findById(currentUser.getId()));
                 req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
                 return;
@@ -81,7 +90,14 @@ public class ProfileController extends HttpServlet {
             } else {
                 String existingAvatar = req.getParameter("avatarUrl");
                 if (existingAvatar != null && !existingAvatar.isBlank()) {
-                    avatarPath = existingAvatar.trim();
+                    existingAvatar = existingAvatar.trim();
+                    if (!existingAvatar.matches("https?://[^\\s]+") || existingAvatar.length() > 255) {
+                        req.setAttribute("alert", "Link ảnh đại diện không hợp lệ.");
+                        req.setAttribute("user", userService.findById(currentUser.getId()));
+                        req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
+                        return;
+                    }
+                    avatarPath = existingAvatar;
                 }
             }
 

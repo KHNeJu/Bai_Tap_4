@@ -13,17 +13,17 @@
     <form role="form" action="<c:url value='/admin/category/insert'/>" method="post" enctype="multipart/form-data">
         <div>
             <label>Tên danh mục:</label>
-            <input type="text" name="categoryName" required placeholder="Nhập tên danh mục">
+            <input class="form-control" type="text" name="categoryName" required minlength="1" maxlength="50" placeholder="Nhập tên danh mục">
         </div>
         <br>
         <div>
             <label>Link ảnh (nếu có):</label>
-            <input type="url" name="images" placeholder="https://example.com/image.jpg">
+            <input class="form-control" type="url" name="images" maxlength="500" placeholder="https://example.com/image.jpg">
         </div>
         <br>
         <div>
             <label>Ảnh đại diện:</label>
-            <input type="file" name="icon">
+            <input class="form-control" type="file" name="icon" accept="image/*">
         </div>
         <br>
         <div>
@@ -32,8 +32,8 @@
             <label><input type="radio" name="status" value="0"> Khóa</label>
         </div>
         <br>
-        <button type="submit">Thêm</button>
-        <button type="reset">Hủy</button>
+        <button class="btn btn-primary" type="submit">Thêm</button>
+        <button class="btn btn-outline-secondary" type="reset">Hủy</button>
     </form>
     <br>
     <a href="<c:url value='/admin/category/list'/>">Trở về danh sách</a>

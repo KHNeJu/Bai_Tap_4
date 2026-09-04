@@ -6,17 +6,19 @@
     <title>Quản lý danh mục</title>
 </head>
 <body>
-    <h1>Danh sách danh mục</h1>
-    <a href="<c:url value='/admin/category/add'/>">Thêm danh mục mới</a>
-    <br><br>
-    <table border="1" width="80%">
-        <tr>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">Danh sách danh mục</h1>
+        <a class="btn btn-primary" href="<c:url value='/admin/category/add'/>">Thêm danh mục mới</a>
+    </div>
+    <div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light"><tr>
             <th>STT</th>
             <th>Hình ảnh</th>
             <th>Tên danh mục</th>
             <th>Trạng thái</th>
             <th>Hành động</th>
-        </tr>
+        </tr></thead>
         <c:forEach items="${cateList}" var="cate" varStatus="STT">
             <tr>
                 <td>${STT.index + 1}</td>
@@ -30,19 +32,18 @@
                                 <c:url value="/image?fname=${cate.images}" var="imgUrl" />
                             </c:otherwise>
                         </c:choose>
-                        <img height="100" width="140" src="${imgUrl}" alt="${cate.categoryName}" />
+                        <img class="img-thumbnail" height="100" width="140" src="${imgUrl}" alt="${cate.categoryName}" />
                     </c:if>
                 </td>
                 <td>${cate.categoryName}</td>
                 <td>${cate.status == 1 ? 'Hoạt động' : 'Khóa'}</td>
                 <td>
-                    <a href="<c:url value='/admin/category/edit?id=${cate.categoryId}'/>">Sửa</a> | 
-                    <a href="<c:url value='/admin/category/delete?id=${cate.categoryId}'/>" onclick="return confirm('Bạn có chắc muốn xoá?');">Xóa</a>
+                    <a class="btn btn-sm btn-outline-primary" href="<c:url value='/admin/category/edit?id=${cate.categoryId}'/>">Sửa</a>
+                    <a class="btn btn-sm btn-outline-danger" href="<c:url value='/admin/category/delete?id=${cate.categoryId}'/>" onclick="return confirm('Bạn có chắc muốn xoá?');">Xóa</a>
                 </td>
             </tr>
         </c:forEach>
     </table>
-    <br>
-    <a href="<c:url value='/logout'/>">Đăng xuất</a>
+    </div>
 </body>
 </html>

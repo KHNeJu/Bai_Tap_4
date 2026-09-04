@@ -45,6 +45,8 @@ public class UserServiceImpl implements UserService {
     public User login(String username, String password) {
         User user = this.get(username);
         if (user != null && password.equals(user.getPassWord())) {
+            user.setLastLogin(new Date());
+            userDao.update(user);
             return user;
         }
         return null;

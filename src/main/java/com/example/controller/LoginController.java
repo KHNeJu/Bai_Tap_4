@@ -22,7 +22,7 @@ public class LoginController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("account") != null) {
-            resp.sendRedirect(req.getContextPath() + "/waiting");
+            resp.sendRedirect(req.getContextPath() + "/home");
             return;
         }
 
@@ -38,7 +38,7 @@ public class LoginController extends HttpServlet {
                     if (user != null) {
                         session.setAttribute("account", user);
                     }
-                    resp.sendRedirect(req.getContextPath() + "/waiting");
+                    resp.sendRedirect(req.getContextPath() + "/home");
                     return;
                 }
             }
@@ -62,12 +62,14 @@ public class LoginController extends HttpServlet {
         }
 
         String alertMsg = "";
-        if (username.isEmpty() || password.isEmpty()) {
+        if (username == null || username.isBlank() || password == null || password.isEmpty()) {
             alertMsg = "Tài khoản hoặc mật khẩu không được rỗng";
             req.setAttribute("alert", alertMsg);
             req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
             return;
         }
+
+        username = username.trim();
 
         User user = service.login(username, password);
         if (user != null) {
@@ -78,7 +80,7 @@ public class LoginController extends HttpServlet {
             if (isRememberMe) {
                 saveRememberMe(resp, username);
             }
-            resp.sendRedirect(req.getContextPath() + "/waiting");
+            resp.sendRedirect(req.getContextPath() + "/home");
         } else {
             alertMsg = "Tài khoản hoặc mật khẩu không đúng";
             req.setAttribute("alert", alertMsg);

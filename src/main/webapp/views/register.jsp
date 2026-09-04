@@ -13,27 +13,27 @@
     <form action="${pageContext.request.contextPath}/register" method="post">
         <div>
             <label>Username:</label>
-            <input type="text" name="username" required>
+            <input type="text" name="username" required minlength="3" maxlength="50" pattern="[A-Za-z0-9_]+" title="Username chỉ gồm chữ cái, số và dấu gạch dưới; dài từ 3 đến 50 ký tự">
         </div>
         <br>
         <div>
             <label>Password:</label>
-            <input type="password" name="password" required>
+            <input type="password" name="password" required minlength="6" maxlength="255">
         </div>
         <br>
         <div>
             <label>Email:</label>
-            <input type="email" name="email" required>
+            <input type="email" name="email" required maxlength="255">
         </div>
         <br>
         <div>
             <label>Full Name:</label>
-            <input type="text" name="fullname" required>
+            <input type="text" name="fullname" required minlength="2" maxlength="255">
         </div>
         <br>
         <div>
             <label>Phone:</label>
-            <input type="text" name="phone">
+            <input type="tel" name="phone" maxlength="20" pattern="[0-9+() .-]{7,20}" title="Số điện thoại không hợp lệ">
         </div>
         <br>
         <button type="submit">Đăng ký</button>

@@ -15,6 +15,7 @@ import jakarta.servlet.http.Part;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 @WebServlet(urlPatterns = {"/admin/category/add", "/admin/category/insert"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
@@ -35,12 +36,32 @@ public class CategoryAddController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         String categoryName = req.getParameter("categoryName");
-        int status = Integer.parseInt(req.getParameter("status"));
+        String statusParam = req.getParameter("status");
+        if (categoryName == null || categoryName.isBlank() || categoryName.trim().length() > 50) {
+            categoryError(req, resp, "Tên danh mục phải có từ 1 đến 50 ký tự.");
+            return;
+        }
+        int status;
+        try {
+            status = Integer.parseInt(statusParam);
+        } catch (Exception e) {
+            categoryError(req, resp, "Trạng thái danh mục không hợp lệ.");
+            return;
+        }
+        if (status != 0 && status != 1) {
+            categoryError(req, resp, "Trạng thái danh mục không hợp lệ.");
+            return;
+        }
+        categoryName = categoryName.trim();
 
         Category category = new Category();
         category.setCategoryName(categoryName);
         category.setStatus(status);
         String imageUrl = req.getParameter("images");
+        if (imageUrl != null && !imageUrl.isBlank() && !isValidUrl(imageUrl.trim())) {
+            categoryError(req, resp, "Link ảnh không hợp lệ.");
+            return;
+        }
 
         try {
             Part part = req.getPart("icon");
@@ -73,6 +94,23 @@ public class CategoryAddController extends HttpServlet {
             req.setAttribute("alert", "System error!");
             req.getRequestDispatcher("/views/admin/add-category.jsp").forward(req, resp);
         }
+    }
+
+    private boolean isValidUrl(String value) {
+        try {
+            URI uri = URI.create(value);
+            return value.length() <= 500
+                    && ("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme()))
+                    && uri.getHost() != null;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private void categoryError(HttpServletRequest req, HttpServletResponse resp, String message)
+            throws ServletException, IOException {
+        req.setAttribute("alert", message);
+        req.getRequestDispatcher("/views/admin/add-category.jsp").forward(req, resp);
     }
 
     private String extractFileName(Part part) {

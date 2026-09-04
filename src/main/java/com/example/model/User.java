@@ -49,6 +49,10 @@ public class User implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
+    @Column(name = "lastLogin")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastLogin;
+
     public User() {
     }
 
@@ -81,4 +85,6 @@ public class User implements Serializable {
     public void setPhone(String phone) { this.phone = phone; }
     public Date getCreatedDate() { return createdDate; }
     public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
+    public Date getLastLogin() { return lastLogin; }
+    public void setLastLogin(Date lastLogin) { this.lastLogin = lastLogin; }
 }
