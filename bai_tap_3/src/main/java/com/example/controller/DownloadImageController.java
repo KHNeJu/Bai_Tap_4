@@ -24,7 +24,7 @@ public class DownloadImageController extends HttpServlet {
         }
 
         Path uploadRoot = Path.of(Constant.DIR).toAbsolutePath().normalize();
-        Path imagePath = uploadRoot.resolve(fileName).normalize();
+        Path imagePath = uploadRoot.resolve(fileName.replace('\\', '/')).normalize();
         if (!imagePath.startsWith(uploadRoot)) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;

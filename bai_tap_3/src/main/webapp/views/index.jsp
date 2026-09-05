@@ -106,7 +106,10 @@
                 <div class="latest-product-image">
                     <c:choose>
                         <c:when test="${not empty product.image}">
-                            <img src="${product.image}" alt="${product.name}">
+                            <c:choose>
+                                <c:when test="${product.image.startsWith('http://') or product.image.startsWith('https://')}"><img src="${product.image}" alt="${product.name}"></c:when>
+                                <c:otherwise><c:url value="/image" var="productImage"><c:param name="fname" value="${product.image}"/></c:url><img src="${productImage}" alt="${product.name}"></c:otherwise>
+                            </c:choose>
                         </c:when>
                         <c:otherwise>
                             <span class="text-muted">Chưa có hình ảnh</span>

@@ -8,15 +8,19 @@ import com.example.service.impl.CategoryServiceImpl;
 import com.example.service.impl.ProductServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.io.File;
 
 @WebServlet(urlPatterns = {"/admin/product/add", "/admin/product/insert", "/admin/product/edit", "/admin/product/update"})
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 10 * 1024 * 1024, maxRequestSize = 50 * 1024 * 1024)
 public class AdminProductFormController extends HttpServlet {
     private static final BigDecimal MAX_PRICE = new BigDecimal("999999999.99");
     private final IProductService productService = new ProductServiceImpl();
@@ -51,6 +55,18 @@ public class AdminProductFormController extends HttpServlet {
                 throw new IllegalArgumentException();
             }
             Product product;
+            String image = request.getParameter("image");
+            Part imagePart = request.getPart("imageFile");
+            if (imagePart != null && imagePart.getSize() > 0) {
+                String extension = getExtension(imagePart.getSubmittedFileName());
+                String fileName = System.currentTimeMillis() + extension;
+                File uploadDir = new File(com.example.util.Constant.DIR, "product");
+                if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+                    throw new IOException("Không thể tạo thư mục uploads/product");
+                }
+                imagePart.write(new File(uploadDir, fileName).getAbsolutePath());
+                image = "product/" + fileName;
+            }
             if (request.getServletPath().endsWith("/update")) {
                 product = productService.findById(Integer.parseInt(request.getParameter("id")));
                 product.setName(name.trim());
@@ -59,9 +75,9 @@ public class AdminProductFormController extends HttpServlet {
                 product.setQuantity(quantity);
                 product.setCategory(category);
             } else {
-                product = new Product(name.trim(), description, price, request.getParameter("image"), quantity, new Date(), category);
+                product = new Product(name.trim(), description, price, image, quantity, new Date(), category);
             }
-            product.setImage(request.getParameter("image"));
+            product.setImage(image);
             if (request.getServletPath().endsWith("/update")) {
                 productService.update(product);
             } else {
@@ -72,5 +88,13 @@ public class AdminProductFormController extends HttpServlet {
             request.setAttribute("alert", "Dữ liệu sản phẩm không hợp lệ.");
             doGet(request, response);
         }
+    }
+
+    private String getExtension(String fileName) {
+        if (fileName == null) {
+            return "";
+        }
+        int dot = fileName.lastIndexOf('.');
+        return dot >= 0 ? fileName.substring(dot).replaceAll("[^a-zA-Z0-9.]", "") : "";
     }
 }

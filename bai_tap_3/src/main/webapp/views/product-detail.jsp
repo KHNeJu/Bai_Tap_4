@@ -63,12 +63,19 @@
 				<section class="detail-gallery">
 					<div class="detail-main-image">
 						<c:choose>
-							<c:when test="${not empty product.image}"><img src="${product.image}" alt="${product.name}"></c:when>
+							<c:when test="${not empty product.image}">
+								<c:choose>
+									<c:when test="${product.image.startsWith('http://') or product.image.startsWith('https://')}"><img src="${product.image}" alt="${product.name}"></c:when>
+									<c:otherwise><c:url value="/image" var="productImage"><c:param name="fname" value="${product.image}"/></c:url><img src="${productImage}" alt="${product.name}"></c:otherwise>
+								</c:choose>
+							</c:when>
 							<c:otherwise><span class="text-muted">Sản phẩm chưa có hình ảnh</span></c:otherwise>
 						</c:choose>
 					</div>
 					<c:if test="${not empty product.image}">
-						<div class="detail-thumbnails"><div class="detail-thumbnail"><img src="${product.image}" alt="Ảnh nhỏ ${product.name}"></div></div>
+						<div class="detail-thumbnails"><div class="detail-thumbnail">
+							<c:choose><c:when test="${product.image.startsWith('http://') or product.image.startsWith('https://')}"><img src="${product.image}" alt="Ảnh nhỏ ${product.name}"></c:when><c:otherwise><c:url value="/image" var="productImage"><c:param name="fname" value="${product.image}"/></c:url><img src="${productImage}" alt="Ảnh nhỏ ${product.name}"></c:otherwise></c:choose>
+						</div></div>
 					</c:if>
 				</section>
 
