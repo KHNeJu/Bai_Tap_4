@@ -9,7 +9,7 @@ import java.util.Map;
 public final class JpaConfig {
         private static final EntityManagerFactory FACTORY = Persistence.createEntityManagerFactory(
             "baitap-jpa",
-            Map.of("jakarta.persistence.jdbc.password", System.getenv().getOrDefault("DB_PASSWORD", "")));
+            Map.of("jakarta.persistence.jdbc.password", System.getenv().getOrDefault("DB_PASSWORD", "100706")));
 
     private JpaConfig() {
     }
